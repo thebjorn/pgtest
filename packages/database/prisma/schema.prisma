@@ -1,0 +1,109 @@
+
+datasource db {
+    provider  = "postgresql"
+    url       = env("POSTGRES_PRISMA_URL")
+    directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+generator client {
+    provider = "prisma-client-js"
+    // output = "../src/lib/generated/client"
+}
+
+
+model Person {
+    id         String  @id @default(cuid())
+    email      String?
+    name       String?
+    first_name String?
+    last_name  String?
+    picture    String?
+
+    createdAt DateTime   @default(now())
+    updatedAt DateTime   @updatedAt
+    Customer  Customer[]
+    Login     Login[]
+    Result    Result[]
+}
+
+model Login {
+    id         String   @id @default(cuid())
+    sub        String
+    password   String?
+    person     Person   @relation(fields: [personId], references: [id])
+    personId   String
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+}
+
+model Customer {
+    id              String   @id @default(cuid())
+    primary_contact Person?  @relation(fields: [personId], references: [id])
+    createdAt       DateTime @default(now())
+    updatedAt       DateTime @updatedAt
+    personId        String?
+    Syllabus        Syllabus[]
+    Result          Result[]
+}
+
+// presentation models
+
+model Syllabus {
+    id        String   @id @default(cuid())
+    name      String
+    question_coverage Float @default(0)
+    customer  Customer @relation(fields: [customerId], references: [id])
+    customerId String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    Topic     Topic[]
+    Result    Result[]
+}
+
+model Topic {
+    id        String   @id @default(cuid())
+    name      String
+    syllabus  Syllabus @relation(fields: [syllabusId], references: [id])
+    syllabusId String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    Question  Question[]
+}
+
+model Question {
+    id        String   @id @default(cuid())
+    question_type String
+    stem      Json
+    alternatives Json
+    topic     Topic @relation(fields: [topicId], references: [id])
+    topicId   String
+    Answer    Answer[]
+}
+
+// answer models
+
+model Result {
+    id        String   @id @default(cuid())
+    customer  Customer @relation(fields: [customerId], references: [id])
+    customerId String
+    person    Person @relation(fields: [personId], references: [id])
+    personId  String
+    syllabus  Syllabus @relation(fields: [syllabusId], references: [id])
+    syllabusId String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    pct_score     Float
+    points    Int
+    max_points Int
+    answers   Answer[]
+}
+
+model Answer {
+    id        String   @id @default(cuid())
+    result    Result @relation(fields: [resultId], references: [id])
+    resultId  String
+    question  Question @relation(fields: [questionId], references: [id])
+    questionId String
+    answer_alternatives Json
+    answeredAt DateTime @default(now())
+}
