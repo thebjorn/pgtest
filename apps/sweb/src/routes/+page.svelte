@@ -9,3 +9,9 @@
 
 
 <pre>{JSON.stringify(data, null, 4)}</pre>
+
+<style>
+    h1 {
+        color: blue;
+    }
+</style>
