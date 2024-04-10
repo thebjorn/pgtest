@@ -2,7 +2,7 @@
   "name": "pgtest",
   "private": true,
   "scripts": {
-    "build": "turbo build --remote-only=false",
+    "build": "turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
